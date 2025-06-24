@@ -2,12 +2,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar y restaurar
-COPY *.csproj ./
+# Copiar el archivo .csproj y restaurar dependencias
+COPY UaddAPI.csproj ./
 RUN dotnet restore
 
-# Copiar el resto y compilar
-COPY . .
+# Copiar todo el resto del código
+COPY . ./
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # Etapa 2: Runtime
