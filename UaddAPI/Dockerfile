@@ -1,23 +1,19 @@
-﻿# Etapa base (runtime)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
-
-# Etapa de build
+﻿# Etapa 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["UaddAPI/UaddAPI.csproj", "UaddAPI/"]
-RUN dotnet restore "UaddAPI/UaddAPI.csproj"
+
+# Copiar y restaurar
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copiar el resto y compilar
 COPY . .
-WORKDIR "/src/UaddAPI"
-RUN dotnet build "UaddAPI.csproj" -c Release -o /app/build
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
-# Etapa de publicación
-FROM build AS publish
-RUN dotnet publish "UaddAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-# Etapa final
-FROM base AS final
+# Etapa 2: Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
+
+EXPOSE 80
 ENTRYPOINT ["dotnet", "UaddAPI.dll"]
