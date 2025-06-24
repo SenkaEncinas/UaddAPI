@@ -50,6 +50,7 @@ builder.Services.AddSwaggerGen(opt =>
 builder.Services.AddDbContext<UaddDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Cambio forzado para reactivar build en Railway
 
 // Token service
 builder.Services.AddScoped<TokenService>();
